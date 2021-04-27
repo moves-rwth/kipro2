@@ -5,7 +5,7 @@ The [PDF file](latticed_k_induction_cav21.pdf) is available in this repository.
 
 ---
 As part of CAV's artifact evaluation, we provide a Docker image.
-Download link: TODO URL.
+Download link: https://zenodo.org/record/4723794#.YIhNqaGxWCo .
 Start via
 ```
 docker image load -i kipro2.tar.gz
