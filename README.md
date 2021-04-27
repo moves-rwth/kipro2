@@ -59,7 +59,7 @@ while(f=1){
 }
 ```
 
-We use kipro2 to verify 2-inductiveness of `wp[C](c) <= c+1` by running
+We use kipro2 to verify 2-inductiveness of `wp[geo1](c) <= c+1` by running
 ```
 poetry run kipro2 benchmarks/cav21/geo1.pgcl
 ```
@@ -87,7 +87,7 @@ while(f=1){
 }
 ```
 
-kipro2 refutes the property given in the first line (`wp[C](c) <= c+0.999999999999`) after about a second.
+kipro2 refutes the property given in the first line (`wp[geo2](c) <= c+0.999999999999`) after about a second.
 
 The output might be hard to read since it is the result of running both the BMC engine and the k-induction engine in parallel (`--checker both`).
 We can set `--checker bmc` to only run BMC:
