@@ -1,0 +1,9 @@
+// ARGS: --ert --post 0 --pre "0.6*x" --assert-inductive 1
+// examples/NCH-18/linear/linear01.imp
+nat x;
+while (2 <= x) {
+    { x := x - 1; } [1/3] {
+        x := x - 2;
+    }
+    tick(1);
+}

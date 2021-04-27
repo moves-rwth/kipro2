@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "kipro2"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.scripts]
+kipro2 = "kipro2.cmd:main"
+kipro2_benchmark = "benchmarks.benchmark:main"
+
+[tool.poetry.dependencies]
+python = "^3.6.1"
+probably = {git = "https://github.com/Philipp15b/probably.git", rev="6795c4fb029f81022dbc92fc42ea873ba28a809e"}
+six = "^1.15.0"
+PySMT = "^0.9.0"
+click = "^7.1.2"
+pandas = "^1.0.0"
+attrs = "^19.3.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.1"
+pytest-cov = "^2.9.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

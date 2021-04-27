@@ -1,0 +1,14 @@
+// ARGS: --ert --post 0 --pre "0.666667*(t+9-h)" --assert-inductive 1
+// examples/NCH-18/linear/race.imp
+nat h;
+nat t;
+nat r;
+nat ticks;
+while (h <= t) {
+    t := t + 1;
+    {
+        r := 0 : 1/11 + 1 : 1/11 + 2 : 1/11 + 3 : 1/11 + 4 : 1/11 + 5 : 1/11 + 6 : 1/11 + 7 : 1/11 + 8 : 1/11 + 9 : 1/11 + 10 : 1/11;
+        h := h + r;
+    } [1/2] { h := h + 0; }
+    tick(1);
+}

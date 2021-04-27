@@ -1,0 +1,14 @@
+// ARGS: --ert --post 0 --pre "0.5*(x+2) + 0.5*(y+2)" --assert-inductive 3
+// examples/NCH-18/linear/C4B_t30.imp
+nat x;
+nat y;
+nat t;
+nat r;
+while (0 < x) {
+    r := 1 : 1/3 + 2 : 1/3 + 3 : 1/3;
+    x := x - r;
+    t := x;
+    x := y;
+    y := t;
+    tick(1);
+}

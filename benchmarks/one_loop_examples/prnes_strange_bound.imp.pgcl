@@ -1,0 +1,10 @@
+// examples/NCH-18/linear/prnes.imp
+nat y;
+nat n;
+if (0 <= y) { skip; }
+else { while (true) {} }
+while (n < 0) {
+    { n := n + 1; } [9/10] {
+        skip;
+    }
+    tick(9);

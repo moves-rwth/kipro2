@@ -1,0 +1,3 @@
+[submodule "benchmarks/timeout"]
+	path = benchmarks/timeout
+	url = https://github.com/pshved/timeout.git

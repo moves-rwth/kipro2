@@ -1,0 +1,17 @@
+// ARGS: --ert --post 0 --pre "2*(m-y)+0.666667*(n-x)" --assert-inductive 1
+// examples/NCH-18/linear/rdspeed.imp
+nat x;
+nat y;
+nat m;
+nat n;
+nat r;
+while ((x + 3 <= n)) {
+    if (y < m) {
+        r := 0 : 1/2 + 1 : 1/2;
+        y := y + r;
+    } else {
+        r := 0 : 1/4 + 1 : 1/4 + 2 : 1/4 + 3 : 1/4;
+        x := x + r;
+    }
+    tick(1);
+}
