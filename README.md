@@ -1,11 +1,11 @@
 # kipro2: Bounded Model Checking and k-Induction for Probabilistic Programs
 
-This is the implementation `kipro2` to our paper _"Latticed k-Induction with an Application to Probabilistic Programs"_ in Computer Aided Verification 2021 by Batz et al.
+`kipro2` is the tool to our CAV'21 paper _"Latticed k-Induction with an Application to Probabilistic Programs"_.
 The [PDF file](latticed_k_induction_cav21.pdf) is available in this repository.
 
 ---
-As part of our CAV submission, we provide a Docker image to play with.
-Download at TODO URL.
+As part of CAV's artifact evaluation, we provide a Docker image.
+Download link: TODO URL.
 Start via
 ```
 docker image load -i kipro2.tar.gz
@@ -13,8 +13,8 @@ docker run -it kipro2
 ```
 ---
 
-kipro2 can do bounded model checking and k-induction on probabilistic programs in parallel.
-It can try to prove inductiveness or try to refute properties like `wp[C](f) <= g` for arbitrary initial program states.
+kipro2 applies k-induction and bounded model checking to probabilistic programs via SMT solving.
+That is, given a probabilistic program C, pre-and postexpectations f,g, kipro2 verifies or refutes `wp[C](f) <= g` either by proving k-inductiveness or by finding an initial program state violating `wp[C](f) <= g`.
 
 ## Contents
 
@@ -32,18 +32,19 @@ It can try to prove inductiveness or try to refute properties like `wp[C](f) <= 
 ### Benchmarks
 
 Go to the _Benchmarks_ section below to read how our benchmarks work in more detail.
-To just reproduce the results from our paper, run one of
+To reproduce the results given in Table 2 and 3 of our paper, run one of
 ```bash
-bash benchmark.sh --timeout=300  # 5 minute timeout per input, takes about 35min total
+bash benchmark.sh --timeout=300  # 300 seconds = 5 minute timeout per input, takes about 15min total
 bash benchmark.sh                # 15 minute timeout (default)
 ```
+We recommend a timeout per input of 5 minutes to reduce the runtime of the benchmark set. With this timeout, it took us 35 minutes to reproduce the benchmarks on a 2,3 GHz Dual-Core Intel Core i5. In case some of the benchmarks time out on your machine that---according to the tables---should not time out, please increase the timeout per input. The timeout per input used in the paper is 15 minutes. With this timeout, reproducing the benchmarks will take considerably longer.
 
-### Example: Verifying Runtime Upper Bounds
+### Example: Verifying Upper Bounds on Weakest Preexpectations
 
-Let's look at the first geometric loop example (`benchmarks/cav21/geo1.pgcl`).
+Consider the geometric loop example (`benchmarks/cav21/geo1.pgcl`):
 
 ```
-// ARGS: --post c --pre "c+1" --checker both --assert-inductive 2
+// ARGS: --post c --pre "c+1" --checker both
 
 nat c;
 nat f;
@@ -53,28 +54,19 @@ while(f=1){
 }
 ```
 
-You can verify inductiveness of the pre-expectation bound `c+1` for the _probabilistic weakest pre-expectation transformer_ the post-expectation `c` by running
+We use kipro2 to verify 2-inductiveness of `wp[C](c) <= c+1` by running
 ```
 poetry run kipro2 benchmarks/cav21/geo1.pgcl
 ```
-The output contains "Property is 2-inductive". Success!
+The output contains "Property is 2-inductive".
 
-Let's look at the program itself in more detail.
-The first line in the program is a comment that is interpreted by kipro2 to use as default arguments to the program.
-We could also have executed `poetry run kipro2 benchmarks/cav21/geo1.pgcl --post c --pre "c+1" --assert-inductive 2` without the `// ARGS:` comment.
-The `--assert-inductive 2` is used to assert after execution that the result is correct.
+The first line in the program is a comment that kipro2 parses to determine the pre- and post-expectations considered and what checker to use (kind/bmc/both).
+We could also have executed `poetry run kipro2 benchmarks/cav21/geo1.pgcl --post c --pre "c+1"` without the `// ARGS:` comment in the pgcl-file.
 
-The first two actual code lines declare to natural number variables `c`, `f`.
-While `f=1`, the loop does a coin flip (with probability ½) and either sets `f` to `0` or increments `c` by one.
 
-So what we ask kipro2 is: Prove (using k-induction) or refute (using bounded model checking) that `wp[program](c) <= c+1`.
-You can read it as: If we observe `c` after the program's termination, is `c+1` a valid upper bound for the state before execution?
-The question is one over _all initial states_ with arbitrary values for the variables.
-This property is 2-inductive, so the answer is yes!
+### Example: Refuting Upper Bounds on Weakest Preexpectations
 
-### Example: Refutation of Weakest Pre-expectation Bounds
-
-As a second example, we refute a bound on the geometric loop that is not valid: `c+0.999999999999`.
+As a second example, we refute a property:
 ```
 poetry run kipro2 benchmarks/cav21/geo2.pgcl
 ```
@@ -90,14 +82,14 @@ while(f=1){
 }
 ```
 
-kipro2 refutes the property in the comment (`wp[geo2](c) <= c+0.999999999999`) after about a second with `k = 46`.
+kipro2 refutes the property given in the first line (`wp[C](c) <= c+0.999999999999`) after about a second.
 
-The output might be a bit ugly since it is the result of running both the bouded model checking engine and the induction engine in parallel (`--checker both`).
-We can run the tool again, but now with `--checker bmc` to only run the bounded model checker:
+The output might be hard to read since it is the result of running both the BMC engine and the k-induction engine in parallel (`--checker both`).
+We can set `--checker bmc` to only run BMC:
 ```
 poetry run kipro2 benchmarks/cav21/geo2.pgcl --checker bmc
 ```
-There's even a counter-example for the initial state that violates the property:
+kipro 2 now provides an initial state witnessing the violation of the above property:
 ```
 kipro2: SAT. Model:
 f := 1
@@ -106,7 +98,7 @@ c := 1648
 
 ### More Examples
 
-You can find two more examples for **runtime bounds** in [EXAMPLES.md](EXAMPLES.md).
+You can find two more examples (also for verifying refuting bounds on expected runtimes) in [EXAMPLES.md](EXAMPLES.md).
 
 ## 2. CAV Artifact Docker Image
 
