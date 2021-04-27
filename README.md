@@ -101,6 +101,33 @@ f := 1
 c := 1648
 ```
 
+### Try it yourself
+
+Try to verify or refute your own programs and properties! For instance, you could create a file called `mygeo.pgcl` containing:
+```
+// ARGS: --post c --pre "c+2" --checker kind
+
+nat c;
+nat f;
+
+while(f=1){
+   {f := 0}[0.5]{c := c+2}
+}
+```
+
+i.e., the geometric loop where we increment c by 2 instead of 1. Check whether this property is k-inductive by executing:
+```
+poetry run kipro2 mygeo.pgcl 
+```
+
+Let us now use BMC to check whether `c+1.5` is also an upper bound by modifying the first line of `mygeo.pgcl` as follows:
+```
+// ARGS: --post c --pre "c+1.5" --checker bmc
+```
+
+
+
+
 ### More Examples
 
 You can find two more examples (also for verifying refuting bounds on expected runtimes) in [EXAMPLES.md](EXAMPLES.md).
