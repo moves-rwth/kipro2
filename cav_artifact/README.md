@@ -8,9 +8,9 @@ The artifact's main code is in /root/artifact.
 Main documentation and quick start for kipro2:
   ---> nano /root/artifact/README.md
 
-You can find more documentation online in the GitHub repository.
+For a more convenient version of the README indicated above, please consider the README of our GitHub repository: https://github.com/moves-rwth/kipro2
 
-This Docker image contains the full kipro2 code and tools to generate benchmark tables, as well as the paper's PDF file.
+This Docker image contains the kipro2 code and tools to generate benchmark tables, as well as the paper's PDF file in /root/latticed_k_induction_cav21.pdf .
 
-We've installed nano and vim for you already.
-This image is based on Ubuntu, so you can install your own software with `apt-get update && apt-get install [PACKAGES]`.
+We have installed nano and vim.
+Since this image is based on Ubuntu, you can install your own software with `apt-get update && apt-get install [PACKAGES]`.
