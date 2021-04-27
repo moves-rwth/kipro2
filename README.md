@@ -34,10 +34,15 @@ That is, given a probabilistic program C, pre-and postexpectations f,g, kipro2 v
 Go to the _Benchmarks_ section below to read how our benchmarks work in more detail.
 To reproduce the results given in Table 2 and 3 of our paper, run one of
 ```bash
-bash benchmark.sh --timeout=300  # 300 seconds = 5 minute timeout per input, takes about 15min total
+bash benchmark.sh --timeout=300  # 300 seconds = 5 minute timeout per input
 bash benchmark.sh                # 15 minute timeout (default)
 ```
 We recommend a timeout per input of 5 minutes to reduce the runtime of the benchmark set. With this timeout, it took us 35 minutes to reproduce the benchmarks on a 2,3 GHz Dual-Core Intel Core i5. In case some of the benchmarks time out on your machine that---according to the tables---should not time out, please increase the timeout per input. The timeout per input used in the paper is 15 minutes. With this timeout, reproducing the benchmarks will take considerably longer.
+
+The benchmark files for Table 2 are located in `benchmarks/cav21/`.
+The benchmark files for Table 3 are located in `benchmarks/one_loop_examples`.
+
+
 
 ### Example: Verifying Upper Bounds on Weakest Preexpectations
 
