@@ -130,7 +130,7 @@ Let us now use BMC to check whether `c+1.5` is also an upper bound by modifying 
 
 ### More Examples
 
-You can find two more examples (also for verifying refuting bounds on expected runtimes) in [EXAMPLES.md](EXAMPLES.md).
+You can find two more examples (also for verifying or refuting bounds on expected runtimes) in [EXAMPLES.md](EXAMPLES.md).
 
 ## 2. CAV Artifact Docker Image
 
