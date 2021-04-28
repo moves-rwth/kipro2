@@ -157,8 +157,8 @@ If you do not have z3 installed, you might want to run `poetry run pysmt-install
 
 ## 4. Architecture
 
-kipro2 is a Python 3 application using [pysmt](https://github.com/pysmt/pysmt) and [Probably](https://github.com/Philipp15b/probably).
-Probably is a library built at MOVES for kipro2 to parse and work with pGCL programs and expectations.
+kipro2 is a Python 3 application using [pysmt](https://github.com/pysmt/pysmt) and [probably](https://github.com/Philipp15b/probably).
+probably is a library built at MOVES for kipro2 to parse and work with pGCL programs and expectations.
 Its internals are [quite extensively documented](https://philipp15b.github.io/probably/), so if there are questions about the input language of kipro2, you might want to look there.
 You can find probably's source code in `.venv/src/probably` after installation.
 
@@ -205,7 +205,7 @@ Use a filter like `geo` to run just `geo1`, `geo2` and `geo3` benchmarks.
 They terminate in a few seconds.
 Or attach something like `--timeout 60` for a timeout of 60 seconds.
 
-A new directory `benchmarks/stats_TIMESTAMP/` will be created automatically and results (using `--stats-path`) wil be written into it for each benchmark.
+A new directory `benchmarks/stats_TIMESTAMP/` will be created automatically and results (using `--stats-path`) will be written into it for each benchmark.
 For each set, there will be two subdirectories, `one_loop_examples` and `cav21`.
 
 **Viewing benchmark results:**
