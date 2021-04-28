@@ -24,7 +24,7 @@ poetry run kipro2 benchmarks/one_loop_examples/ber.imp.pgcl
 ```
 The output contains "Property is 1-inductive". Success!
 
-The first three actual code lines declare to natural number variables `x`, `n`, `r`.
+The first three actual code lines declare natural number variables `x`, `n`, `r`.
 While `x < n`, the loop continues to choose `r` from a Binomial distribution (1 or 0 each with probability ½).
 We then add `r` to `x`.
 `tick(1)` increments the runtime counter, so we count each loop execution as taking one step.
