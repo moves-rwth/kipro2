@@ -67,10 +67,6 @@ class FormulaGenerator():
                     Implies(And([guard_P, guard_I, GT(Function(first_bmc_euf, arg), arith_I)]),
                             Equals(Function(self._eufs[0], arg), arith_I))))
 
-                #self._pointwise_minimum_formulae.add(self._simplifier.simplify(
-                #    Implies(And([guard_P, guard_I, GT(Function(first_bmc_euf, arg), arith_I)]),
-                #    Equals(Function(self._eufs[0], arg), Function(first_bmc_euf, arg)))))
-
 
         for (guard_P, arith_P) in self._characteristic_functional.get_loop_terminated_guard_and_arith_exp_pairs():
             for (guard_I, arith_I) in self._upper_bound_dnf:
@@ -82,9 +78,6 @@ class FormulaGenerator():
                     self._simplifier.simplify(Implies(And([guard_P, guard_I, GT(arith_P, arith_I)]),
                                                       Equals(Function(self._eufs[0], arg), arith_I))))
 
-                #self._pointwise_minimum_formulae.add(
-                #    self._simplifier.simplify(Implies(And([guard_P, guard_I, GT(arith_P, arith_I)]),
-                #                                      Equals(Function(self._eufs[0], arg), arith_P))))
 
         # Next, wee need P_2 to encode the DNF of I ..
         second_bmc_euf = self._bmc_formula_generator.get_eufs()[1]
@@ -103,7 +96,6 @@ class FormulaGenerator():
         # Increment BMC unrolling depth for monus formulae
         # In contrast to BMC, we need the next level of monus/rmonus formulae since the 1-induction check already
         # involves loop execute formulae (for P_1 and P_2).
-        # TODO: Optimize and prohibit bmc from generating loop_terminate and zero_step_not_terminate formulae
         self._first_monus_formulae = self._bmc_formula_generator.get_monus_formulae().copy()
         self._first_rmonus_formulae = self._bmc_formula_generator.get_rmonus_formulae().copy()
         self._incremental_bmc._increment_unrolling_depth(True)
@@ -168,7 +160,6 @@ class FormulaGenerator():
         self._loop_terminated_formulae = self._bmc_formula_generator.get_loop_terminate_formulae()
 
         # Increment BMC unrolling depth for monus formulae and loop_execute
-        # TODO: Optimize and prohibit bmc from generating loop_terminate and zero_step_not_terminate formulae
         self._incremental_bmc._increment_unrolling_depth(True)
 
         self._loop_execute_formulae = self._bmc_formula_generator.get_loop_execute_formulae()

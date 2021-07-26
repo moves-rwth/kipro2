@@ -57,14 +57,14 @@ class IncrementalKInduction():
                 if self._bmc_if_not_k_inductive:
                     raise Exception("Not supported.")
 
-                    if self._incremental_bmc.check_refute():
-                        self._statistics.total_time.stop_timer()
-                        print("Refute. (Unrolling_depth = %s. Number formulae on refutation solver = %s)" % (
-                        self._formula_generator._bmc_formula_generator.get_unrolling_depth(), len(self._solver.assertions)))
-                        print(self._statistics)
-                        if self._assert_refute is not None:
-                            assert self._assert_refute == self._formula_generator.get_unrolling_depth(), "Unrolling depth does not match assertion"
-                        return False
+                    # if self._incremental_bmc.check_refute():
+                    #     self._statistics.total_time.stop_timer()
+                    #     print("Refute. (Unrolling_depth = %s. Number formulae on refutation solver = %s)" % (
+                    #     self._formula_generator._bmc_formula_generator.get_unrolling_depth(), len(self._solver.assertions)))
+                    #     print(self._statistics)
+                    #     if self._assert_refute is not None:
+                    #         assert self._assert_refute == self._formula_generator.get_unrolling_depth(), "Unrolling depth does not match assertion"
+                    #     return False
 
             self._increment_unrolling_depth(True)
 
