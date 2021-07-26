@@ -17,7 +17,7 @@ class FormulaGenerator:
         self._characteristic_functional = characteristic_functional
         self._pysmt_program_variables = self._characteristic_functional.get_pysmt_program_variables()
         self._pysmt_loop_execute_substitutions = self._characteristic_functional.get_pysmt_loop_execute_substitutions()
-        self._upper_bound_dnf = self._characteristic_functional.get_upper_bound_expectation_dnf(upper_bound_expectation)
+        self._upper_bound_dnf = self._characteristic_functional.probably_string_expectation_to_pysmt_dnf(upper_bound_expectation)
         self._simplify_formulae = simplify_formulae
         self._ert = ert
 

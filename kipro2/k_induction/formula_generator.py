@@ -14,12 +14,12 @@ class FormulaGenerator():
         self._characteristic_functional = characteristic_functional
         self._incremental_bmc = incremental_bmc
         self._bmc_formula_generator = incremental_bmc.get_formula_generator()
-        self._upper_bound_dnf = self._characteristic_functional.get_upper_bound_expectation_dnf(upper_bound_expectation, ignore_conjuncts_with_infinity=False)
+        self._upper_bound_dnf = self._characteristic_functional.probably_string_expectation_to_pysmt_dnf(upper_bound_expectation, ignore_conjuncts_with_infinity=False)
         self._simplify_formulae = simplify_formulae
         self._ert = ert
 
         # For the query, we can disregard arithmetic expressions that equal infinity since nothing is greater than infinity.
-        self._upper_bound_dnf_for_k_inductive_query = self._characteristic_functional.get_upper_bound_expectation_dnf(upper_bound_expectation, ignore_conjuncts_with_infinity=True)
+        self._upper_bound_dnf_for_k_inductive_query = self._characteristic_functional.probably_string_expectation_to_pysmt_dnf(upper_bound_expectation, ignore_conjuncts_with_infinity=True)
 
         self._euf_type = self._bmc_formula_generator.get_euf_type()
 

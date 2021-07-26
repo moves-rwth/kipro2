@@ -33,11 +33,12 @@ class CharacteristicFunctional:
 
         self._apply_general_wp = False
         if check_is_one_big_loop(instrs = self.program.instructions, allow_init=False) != None:
-            print("The program is not one big loop with loop-free body. Do you want to apply a one-big-loop transformation and proceed? [Y/N]")
+            print("The program is not one loop with loop-free body. Do you want to apply a one-big-loop transformation and proceed? [Y/N]")
             if input() == "N":
                 raise Exception("The program is not one big loop with loop-free body.")
 
             else:
+                raise Exception("Not supported.")
                 self._apply_general_wp = True
 
 
@@ -102,14 +103,12 @@ class CharacteristicFunctional:
         for name, type in self.declarations.items():
             if type == BoolType():
                 raise Exception("Variable %s is of type Bool, but <we support type Nat only.")
-                smt_variables.append(Symbol(name, typename=BOOL))
 
             elif type == NatType(bounds=None):
                 smt_variables.append(Symbol(name, typename=INT))
 
             elif type == FloatType():
                 raise Exception("Variable %s is of type Float, but we support type Nat only." % name)
-                smt_variables.append(Symbol(name, typename=REAL))
 
             else:
                 raise Exception("Unsupported Variable Type")
@@ -319,56 +318,63 @@ class CharacteristicFunctional:
 
         return pysmt_loop_terminated_dnf
 
-    def get_upper_bound_expectation_dnf(self, upper_bound_expectation, ignore_conjuncts_with_infinity = True):
+    def probably_string_expectation_to_pysmt_dnf(self, upper_bound_expectation, ignore_conjuncts_with_infinity = True):
         """
-        Takes a candidate upper bound expectation (as a String) and returns its DNF, i.e. a list of the form
+        Takes an expectation (as a String as accepted by probably) and returns its DNF, i.e. a list of the form
         [(guard_1, arith_1, ..., guard_n, arith_n)]. If ignore_conjuncts_with_infinity = False, then
         the following holds
 
         (1)   for all i != j, the formula guard_i AND guard_j is UNSAT, and
         (2)   guard_1 OR ... OR guard_n is equivalent to TRUE.
 
-        :param upper_bound_expectation: The candidate upper bound that is to be checked.
+        :param upper_bound_expectation: The expectation whose dnf is to be computed.
         :param ignore_conjuncts_with_infinity: For the refute-queries, conjuncts with arith_exp = infinity can be ignored since nothing is greater than infinity.
         """
 
-        probably_upper_bound_expectation = parse_expectation(upper_bound_expectation)
-        if type(probably_upper_bound_expectation) == CheckFail:
-            print(probably_upper_bound_expectation)
-            raise Exception("CheckFail.")
+        probably_expectation_unnormalized = parse_expectation(upper_bound_expectation)
+        if type(probably_expectation_unnormalized) == CheckFail:
+            print(probably_expectation_unnormalized)
+            raise Exception("CheckFail. There is a problem with the provided expectation.")
 
-        self.is_linear = self.is_linear and check_is_linear_expr(probably_upper_bound_expectation) == None
+        self.is_linear = self.is_linear and check_is_linear_expr(probably_expectation_unnormalized) == None
 
-        flattened_upper_bound_expectation = normalize_expectation_simple(self.program, probably_upper_bound_expectation)
+        # Convert the expectation to summation normal form (like dnf but it is not required that the Boolean expressions partition the state space)
+        probably_expectation_snf = normalize_expectation_simple(self.program, probably_expectation_unnormalized)
 
         logger.info(
-            "Flattened Upper Bound Expectation: %s" % flattened_upper_bound_expectation)
+            "Flattened Upper Bound Expectation: %s" % probably_expectation_snf)
 
-        pysmt_upper_bound_snf = [(probably_expr_to_pysmt(bool_exp, self._pysmt_infinity_variable, True, self.monus_euf, False),
+        # Convert everything to pysmt objects. A probably expectation in snf of the form "[g_1]*a_1 + ... + [g_n]*a_n" is
+        # now represented as [(g_1,a_1), ..., (g_n,a_n)]
+        pysmt_expectation_snf = [(probably_expr_to_pysmt(bool_exp, self._pysmt_infinity_variable, True, self.monus_euf, False),
                                   probably_expr_to_pysmt(arith_exp, self._pysmt_infinity_variable, True, self.rmonus_euf, True))
-                                     for bool_exp, arith_exp in flattened_upper_bound_expectation]
+                                     for bool_exp, arith_exp in probably_expectation_snf]
 
+
+        #------------ DNF Computation ------------
+        # As described in the paper: Go through all possible assignments from occurring Boolean expressions to truth values.
         pysmt_upper_bound_dnf = []
 
-        for bin_seq in product([True, False], repeat=len(pysmt_upper_bound_snf)):
+        for bin_seq in product([True, False], repeat=len(pysmt_expectation_snf)):
             guard_seq, arith_seq = zip(
-                *list(map(self._construct_boolexp_arithexp_par, bin_seq, pysmt_upper_bound_snf)))
+                *list(map(self._construct_boolexp_arithexp_par, bin_seq, pysmt_expectation_snf)))
             to_test = And(guard_seq + (self.non_negative_constraint,))
             if self._sat_solver.is_sat(to_test):
                 # If arith_seq contains infinity, then the whole arithmetic expression is to be interpreted as infinity
-                # Since nothing is greater than infinity, states satisfying And(guard_seq) are always an upper bound and can thus be omitted.
+                # Since nothing is greater than infinity, states satisfying And(guard_seq) can be disregarded when checking ... > "given expectation".
                 if not self._pysmt_infinity_variable in arith_seq or not ignore_conjuncts_with_infinity:
                     resulting_arith = simplify(Plus(arith_seq))
                     pysmt_upper_bound_dnf.append(
                         (simplify(And(guard_seq)), resulting_arith))
+        # ----------------------------------------
+
 
         logger.info("Upper Bound DNF (ignore_conjuncts_with_infinity = %s): %s" % (ignore_conjuncts_with_infinity, ["(%s,%s)" % (guard.serialize(), arith.serialize()) for (guard, arith) in pysmt_upper_bound_dnf]))
 
         if not ignore_conjuncts_with_infinity:
             logger.debug("Checking whether the Boolean expressions occurring in the DNF partition the state space if all variables are non-negative.")
-            # The k-induction encoding is not sound if this does not hold.
+            # If this expectation is part of a pointwise-minimum-computation, then the Boolean expressions must partition the state space.
             assert(not self._sat_solver.is_sat(And([self.non_negative_constraint, Not(Or([guard for (guard, arith) in pysmt_upper_bound_dnf]))])))
-
 
         return pysmt_upper_bound_dnf
 
