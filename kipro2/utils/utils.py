@@ -5,7 +5,12 @@ from pysmt.environment import get_env
 import logging
 import signal
 import os
-import resource
+
+try:
+    import resource
+except ImportError:
+    print ("importing 'resource' not possible on windows. set_max_memory will fail. ")
+
 import pickle
 
 logger = logging.getLogger("kipro2")
@@ -275,8 +280,11 @@ def setup_sigint_handler():
 
 
 def set_max_memory(memory_mb: int):
-    _soft, hard = resource.getrlimit(resource.RLIMIT_AS)
-    resource.setrlimit(resource.RLIMIT_AS, (memory_mb * 1024 * 1024, hard))
+    try:
+        _soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+        resource.setrlimit(resource.RLIMIT_AS, (memory_mb * 1024 * 1024, hard))
+    except:
+        print("set_max_memory not possible on windows")
 
 
 def _is_picklable(obj) -> bool:
