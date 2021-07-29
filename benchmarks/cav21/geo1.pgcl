@@ -1,4 +1,4 @@
-// ARGS: --post c --pre "c+1" --checker both
+// ARGS: --post "c" --pre "c+1" --checker both
 
 nat c;
 nat f;

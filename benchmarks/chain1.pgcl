@@ -1,0 +1,8 @@
+// ARGS: --post "[c=1]" --pre "[c=0 & x<=99]*(999/1000 - 1/1000*x) + [c=1]" --checker kind
+
+nat c;
+nat x;
+
+while(c=0 & x<=99){
+   {c := 1}[0.01]{x := x+1}
+}
